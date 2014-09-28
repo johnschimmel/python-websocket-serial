@@ -19,33 +19,51 @@ class App(object):
     def __init__(self, root):
         
         self.frame = tk.Frame(root)
-        self.text = tk.Text(self.frame)
-        self.text.pack()
-        self.entry = tk.Entry(self.frame)
-        self.entry.insert(tk.END, "http://ipv4.google.com")
-        self.entry.pack()
+        # self.text = tk.Text(self.frame)
+        # self.text.pack()
+        # self.entry = tk.Entry(self.frame)
+        # self.entry.insert(tk.END, "http://ipv4.google.com")
+        # self.entry.pack()
+        self.serialPortOptionsValues = []
+        for port, desc, hwid in sorted(comports()):
+          self.serialPortOptionsValues.append(port)
+        
+        self.serialPortSelectionVar = tk.StringVar(root)
+        self.serialPortSelectionVar.set(self.serialPortOptionsValues[0]) # default value
+        self.serialPortOptionMenu = apply(tk.OptionMenu, (root, self.serialPortSelectionVar) + tuple(self.serialPortOptionsValues))
+        self.serialPortOptionMenu.pack()
+
+        def connectSelectedSerial():
+          print self.serialPortSelectionVar.get()
+
+        self.serial_connect_string = tk.StringVar()
+        self.serial_connect_button = tk.Button(self.frame, textvariable=self.serial_connect_string, command=connectSelectedSerial)
+        self.serial_connect_button.pack()
+
         self.isOn = False
 
-        def fetch_url():
-            url = self.entry.get()
-            self.text.delete(1.0, tk.END)
-            self.text.insert(tk.END, "Fetching...")
-            data = urllib2.urlopen(url).read()
-            self.text.delete(1.0, tk.END)
-            self.text.insert(tk.END, data)
+        # def fetch_url():
+        #     url = self.entry.get()
+        #     self.text.delete(1.0, tk.END)
+        #     self.text.insert(tk.END, "Fetching...")
+        #     data = urllib2.urlopen(url).read()
+        #     self.text.delete(1.0, tk.END)
+        #     self.text.insert(tk.END, data)
 
-        self.fetch_button = tk.Button(self.frame, text="Fetch URL", command=lambda : spawn(fetch_url))
-        self.fetch_button.pack()
+        # self.fetch_button = tk.Button(self.frame, text="Fetch URL", command=lambda : spawn(fetch_url))
+        # self.fetch_button.pack()
 
-        
+
         def quit():
             global run_forever
             run_forever = False
 
         self.quit_string = tk.StringVar()
+        self.quit_string.set('Connect')
         self.quit_button = tk.Button(self.frame, textvariable=self.quit_string, command=quit)
         self.quit_button.pack()
 
+        
         self.frame.pack()
 
 
@@ -119,8 +137,9 @@ if __name__ == '__main__':
     s.start()
     
     for port, desc, hwid in sorted(comports()):
-        print('--- %-20s %s\n' % (port, desc))
+        print('%s' % (port))
     
     while run_forever:
         root.update()
         sleep(0.01)
+
