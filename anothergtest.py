@@ -14,6 +14,10 @@ from geventwebsocket.handler import WebSocketHandler
 
 run_forever = True
 
+serialConnected = False
+serialContacted = False
+ser = None
+s = None
 
 class App(object):
     def __init__(self, root):
@@ -34,9 +38,44 @@ class App(object):
         self.serialPortOptionMenu.pack()
 
         def connectSelectedSerial():
-          print self.serialPortSelectionVar.get()
+
+          global serialConnected
+          global ser
+          global s
+
+          # serial port setup
+          # print self.serialPortSelectionVar.get()
+          if ( not serialConnected):
+            ser = serial.Serial(self.serialPortSelectionVar.get())
+            serialConnected = True
+            self.serial_connect_string.set('Disconnect')
+            ser.setDTR(False)
+            ser.timeout = 0
+            time.sleep(0.5)
+
+            s = SerialPort(ser)
+            s.start()
+            
+            c = 0
+            while not ser.inWaiting():
+              c = c +1
+              print 'waiting %d' % c
+              
+            spawn(read_incoming_serial)
+            
+
+          else:
+            if ser.isOpen():
+              ser.close()
+
+            serialConnected = False
+            serialContacted = False
+            self.serial_connect_string.set('Connect')
+
+          
 
         self.serial_connect_string = tk.StringVar()
+        self.serial_connect_string.set('Connect')
         self.serial_connect_button = tk.Button(self.frame, textvariable=self.serial_connect_string, command=connectSelectedSerial)
         self.serial_connect_button.pack()
 
@@ -53,8 +92,22 @@ class App(object):
         # self.fetch_button = tk.Button(self.frame, text="Fetch URL", command=lambda : spawn(fetch_url))
         # self.fetch_button.pack()
 
+        def ledOn():
+          s.writer('A1')
+        self.on_button = tk.Button(self.frame, text='on', command=ledOn)
+        self.on_button.pack()
+
+        def ledOff():
+          s.writer('B1')
+        self.off_button = tk.Button(self.frame, text='OFF', command=ledOff)
+        self.off_button.pack()
+
 
         def quit():
+            global serialConnected
+            if serialConnected:
+              ser.close()
+
             global run_forever
             run_forever = False
 
@@ -62,16 +115,33 @@ class App(object):
         self.quit_string.set('Connect')
         self.quit_button = tk.Button(self.frame, textvariable=self.quit_string, command=quit)
         self.quit_button.pack()
-
-        
         self.frame.pack()
 
+        def read_incoming_serial():
+          global serialContacted
+          global serialConnected
+
+          while True and serialConnected:
+            buffer = ''
+            buffer = ser.read(ser.inWaiting())
+
+            # initial handshake
+            if not serialContacted:
+              ser.write('A1\n')
+              serialContacted = True
+  
+            if buffer and buffer is not '':
+              print buffer
+            
+            sleep(0.01)
+
+        # spawn(read_incoming_serial)
 
         def check_for_block():
             """ Simple visual indicator if mainloop is blocked """
             i = 0
             while True:
-                self.quit_string.set("Quit " + "-\|/"[i % 4])
+                self.quit_string.set("Quit " + "-\|/"[i % 1])
                 i += 1
                 sleep(0.1)
 
@@ -124,17 +194,18 @@ class SerialPort():
       
   def writer(self, data):
     print "sending", data
-    self.serial.write(str(data))
+    self.serial.write(data + '\n')
+    
 
 if __name__ == '__main__':
     root = tk.Tk()
     app = App(root)
 
-    # serial port setup
-    ser = serial.Serial('/dev/tty.usbmodem1421')
-    ser.timeout = 0
-    s = SerialPort(ser)
-    s.start()
+    # # serial port setup
+    # ser = serial.Serial('/dev/tty.usbmodem1421')
+    # ser.timeout = 0
+    # s = SerialPort(ser)
+    # s.start()
     
     for port, desc, hwid in sorted(comports()):
         print('%s' % (port))
