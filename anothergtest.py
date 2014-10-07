@@ -56,10 +56,10 @@ class App(object):
             s = SerialPort(ser)
             s.start()
             
-            c = 0
-            while not ser.inWaiting():
-              c = c +1
-              print 'waiting %d' % c
+            # c = 0
+            # while not ser.inWaiting():
+            #   c = c +1
+            #   print 'waiting %d' % c
               
             spawn(read_incoming_serial)
             
@@ -93,12 +93,14 @@ class App(object):
         # self.fetch_button.pack()
 
         def ledOn():
-          s.writer('A1')
+          s.writer('A1\n')
+          s.writer('\n')
         self.on_button = tk.Button(self.frame, text='on', command=ledOn)
         self.on_button.pack()
 
         def ledOff():
-          s.writer('B1')
+          s.writer('B1\n')
+          s.writer('\n')
         self.off_button = tk.Button(self.frame, text='OFF', command=ledOff)
         self.off_button.pack()
 
@@ -127,7 +129,8 @@ class App(object):
 
             # initial handshake
             if not serialContacted:
-              ser.write('A1\n')
+              ser.write('A\n')
+              ser.write('\n')
               serialContacted = True
   
             if buffer and buffer is not '':
@@ -153,8 +156,10 @@ class App(object):
                 message = ws.receive()
                 print message
                 self.isOn = not self.isOn
-                sendVal = "y" if self.isOn else "n"
-                s.writer(sendVal)
+                sendVal = "A1" if self.isOn else "B1"
+                s.writer(sendVal + '\n')
+                s.writer('\n')
+                
                 
                 ws.send(message + " wowowowowowowo")
 
@@ -194,7 +199,7 @@ class SerialPort():
       
   def writer(self, data):
     print "sending", data
-    self.serial.write(data + '\n')
+    self.serial.write(data)
     
 
 if __name__ == '__main__':
