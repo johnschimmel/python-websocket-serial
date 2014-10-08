@@ -164,8 +164,8 @@ void loop(){
 
 
 void setController(char input, int value) {
-  mySerial.print("inside set");
-  mySerial.print(input);
+//  mySerial.print("inside set");
+//  mySerial.print(input);
   if (input == 'A') {
     digitalWrite(led, HIGH); 
   } 
