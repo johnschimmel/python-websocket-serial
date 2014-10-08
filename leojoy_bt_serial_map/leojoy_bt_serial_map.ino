@@ -131,42 +131,39 @@ void loop(){
   // read incoming serial (softserial)
 
   digitalWrite(led, ledState);
-  while (mySerial.available() > 0)
-  {
+  int numBytes = mySerial.available();
 
-    digitalWrite(led, HIGH);
-    char received = mySerial.read();
+  if (numBytes >= 2) {
 
-    if (received == '\r') continue;
-    if (received == '\n')
-    {
-      setController(controllerInput, controllerInputVal);
-      combinedData = ""; // Clear recieved buffer
-      byteCount = 0;  
-      break;
+    mySerial.print("got bytes");
+    mySerial.println(numBytes);
 
+
+    int x = mySerial.read(); //read first byte
+    int val = mySerial.read(); //read second byte if available;
+
+    mySerial.println(x);
+    mySerial.println(val);
+    mySerial.println(mySerial.available());
+    mySerial.println("-----");
+
+
+    if (x == '1') {
+      ledState = 1;
+      mySerial.println(val); 
     } 
     else {
-      if (byteCount == 0) {
-        controllerInput = received;
-        byteCount++;    
-      } 
-      else {
-        controllerInputVal = (int) received -48;
-        byteCount++;
-        //        combinedData += received; 
-      }
+      ledState=0;
     }
-
-
+    //    delay(10);
   }
 
 }
 
 
 void setController(char input, int value) {
-//  mySerial.print("inside set");
-//  mySerial.print(value);
+  //  mySerial.print("inside set");
+  //  mySerial.print(value);
   if (input == 'A' && value == 1) {
     ledState = 1;
   } 
@@ -237,6 +234,7 @@ dataForController_t getControllerData(void){
 //   pinMode(A5, INPUT);
 //   digitalWrite(A5, HIGH);
 // }
+
 
 
 
