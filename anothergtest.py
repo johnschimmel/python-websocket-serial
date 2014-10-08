@@ -50,12 +50,16 @@ class App(object):
             serialConnected = True
             self.serial_connect_string.set('Disconnect')
             ser.setDTR(False)
+            ser.baudrate = 115200
             ser.timeout = 0
             time.sleep(0.5)
 
             s = SerialPort(ser)
             s.start()
             
+            while not ser.isOpen():
+              print "waiting for open"
+
             # c = 0
             # while not ser.inWaiting():
             #   c = c +1
@@ -93,14 +97,17 @@ class App(object):
         # self.fetch_button.pack()
 
         def ledOn():
-          s.writer('A1\n')
-          s.writer('\n')
+          s.writer('A1')
+          
         self.on_button = tk.Button(self.frame, text='on', command=ledOn)
         self.on_button.pack()
 
         def ledOff():
-          s.writer('B1\n')
-          s.writer('\n')
+          s.writer('B1')
+          # ser.write('1')
+          # ser.write('\n')
+          # ser.write('\n')
+          
         self.off_button = tk.Button(self.frame, text='OFF', command=ledOff)
         self.off_button.pack()
 
@@ -128,17 +135,15 @@ class App(object):
             buffer = ser.read(ser.inWaiting())
 
             # initial handshake
-            if not serialContacted:
-              ser.write('A\n')
-              ser.write('\n')
-              serialContacted = True
+            # if not serialContacted:
+            #   ser.write('A\n')
+            #   ser.write('\n')
+            #   serialContacted = True
   
             if buffer and buffer is not '':
               print buffer
             
             sleep(0.01)
-
-        # spawn(read_incoming_serial)
 
         def check_for_block():
             """ Simple visual indicator if mainloop is blocked """
@@ -150,24 +155,59 @@ class App(object):
 
         spawn(check_for_block)
 
-        def websocket_app(environ, start_response):
-            if environ["PATH_INFO"] == '/echo':
-                ws = environ["wsgi.websocket"]
-                message = ws.receive()
-                print message
-                self.isOn = not self.isOn
-                sendVal = "A1" if self.isOn else "B1"
-                s.writer(sendVal + '\n')
-                s.writer('\n')
+        # def websocket_app(environ, start_response):
+        #     print envrion
+        #     print '--------'
+        #     print start_response
+
+        #     if environ["PATH_INFO"] == '/echo':
+        #         ws = environ["wsgi.websocket"]
+        #         message = ws.receive()
+        #         print message
+        #         self.isOn = not self.isOn
+        #         sendVal = "A1" if self.isOn else "B1"
+        #         s.writer(sendVal + '\n')
+        #         s.writer('\n')
                 
                 
-                ws.send(message + " wowowowowowowo")
+        #         ws.send(message + " wowowowowowowo")
+
+        # def start_websocket():
+        #     server = pywsgi.WSGIServer(("", 9001), websocket_app, handler_class=WebSocketHandler)
+        #     print "Starting websocket server"
+        #     server.serve_forever()
+            
+        # spawn(start_websocket)
+
+
+        from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
+
+        class EchoApplication(WebSocketApplication):
+          
+          isOn = False
+
+          def on_open(self):
+            print "Connection opened"
+
+          def on_message(self, message):
+            print message
+            print "**************"
+            self.ws.send('FUCK')
+            self.isOn = not self.isOn
+            sendVal = "A1" if self.isOn else "B1"
+            s.writer(sendVal)
+
+
+          def on_close(self, reason):
+            print reason
+            print 'DISCONNECT!!!!'
 
         def start_websocket():
-            server = pywsgi.WSGIServer(("", 9001), websocket_app, handler_class=WebSocketHandler)
-            print "Starting websocket server"
-            server.serve_forever()
-            
+          WebSocketServer(
+              ('', 9001),
+              Resource({'/echo': EchoApplication})
+          ).serve_forever()
+
         spawn(start_websocket)
 
 class SerialPort():
@@ -198,19 +238,17 @@ class SerialPort():
       # time.sleep(0.01)
       
   def writer(self, data):
-    print "sending", data
-    self.serial.write(data)
+    for d in data:
+      self.serial.write(d)
+      self.serial.flush()
+    self.serial.write('\n')
     
+    # print "sending", data
+
 
 if __name__ == '__main__':
     root = tk.Tk()
     app = App(root)
-
-    # # serial port setup
-    # ser = serial.Serial('/dev/tty.usbmodem1421')
-    # ser.timeout = 0
-    # s = SerialPort(ser)
-    # s.start()
     
     for port, desc, hwid in sorted(comports()):
         print('%s' % (port))

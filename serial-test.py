@@ -34,23 +34,24 @@ class SerialPort():
 
 
 
-ser = serial.Serial('/dev/tty.usbmodem1421')
+ser = serial.Serial('/dev/cu.RNBT-2BDF-RNI-SPP')
 ser.timeout = 0
+ser.baudrate = 115200
 ser.setDTR(False)
 
 s = SerialPort(ser)
 c = 0
-while not ser.inWaiting():
+while not ser.isOpen():
 	c = c +1
 	print 'waiting %d' % c
 
 
-if ser.inWaiting():
-	buffer = None
-	buffer = ser.read(ser.inWaiting())
+# if ser.inWaiting():
+# 	buffer = None
+# 	buffer = ser.read(ser.inWaiting())
 
-	if buffer and buffer is not None:
-		print buffer
+# 	if buffer and buffer is not None:
+# 		print buffer
 
 s.writer('A1\n')
 
