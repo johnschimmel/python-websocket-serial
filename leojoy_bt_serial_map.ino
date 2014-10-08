@@ -148,7 +148,6 @@ void loop(){
     else {
       if (byteCount == 0) {
         controllerInput = received;
-        mySerial.println(received);
         byteCount++;    
       } 
       else {
@@ -167,18 +166,18 @@ void loop(){
 void setController(char input, int value) {
   mySerial.print("inside set");
   mySerial.print(input);
-  //  if (input.charAt(0) == 'A') {
-  //    digitalWrite(led, HIGH); 
-  //  } 
-  //  else if (input.charAt(0) == 'B') {
-  //    digitalWrite(led, LOW); 
-  //  }
+  if (input == 'A') {
+    digitalWrite(led, HIGH); 
+  } 
+  else if (input == 'B') {
+    digitalWrite(led, LOW); 
+  }
 
-  digitalWrite(led,LOW);
-  mySerial.print("controller val: ");
-  mySerial.println(input);
-  mySerial.print("value: ");
-  mySerial.println(value);
+//  digitalWrite(led,LOW);
+//  mySerial.print("controller val: ");
+//  mySerial.println(input);
+//  mySerial.print("value: ");
+//  mySerial.println(value);
   //  String tmpStrVal = (String) input.charAt(1);
   //  mySerial.println(tmpStrVal.toInt());
 

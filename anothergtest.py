@@ -103,7 +103,7 @@ class App(object):
         self.on_button.pack()
 
         def ledOff():
-          s.writer('B1')
+          s.writer('B123')
           # ser.write('1')
           # ser.write('\n')
           # ser.write('\n')
@@ -238,9 +238,9 @@ class SerialPort():
       # time.sleep(0.01)
       
   def writer(self, data):
-    for d in data:
-      self.serial.write(d)
-      self.serial.flush()
+    self.serial.write(data[0])
+    self.serial.write(chr(int(data[1:])))
+    self.serial.flush()
     self.serial.write('\n')
     
     # print "sending", data
