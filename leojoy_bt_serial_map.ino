@@ -90,6 +90,7 @@ int controllerInputVal = 0;         // throw away previous integerValue
 String combinedData = "";
 int byteCount = 0;
 int led = 13;
+int ledState = 0;
 
 boolean triangleOn = false;
 boolean circleOn = false;
@@ -129,7 +130,7 @@ void loop(){
 
   // read incoming serial (softserial)
 
-  
+  digitalWrite(led, ledState);
   while (mySerial.available() > 0)
   {
 
@@ -151,7 +152,7 @@ void loop(){
         byteCount++;    
       } 
       else {
-        controllerInputVal = (int) received;
+        controllerInputVal = (int) received -48;
         byteCount++;
         //        combinedData += received; 
       }
@@ -165,19 +166,19 @@ void loop(){
 
 void setController(char input, int value) {
 //  mySerial.print("inside set");
-//  mySerial.print(input);
-  if (input == 'A') {
-    digitalWrite(led, HIGH); 
+//  mySerial.print(value);
+  if (input == 'A' && value == 1) {
+    ledState = 1;
   } 
-  else if (input == 'B') {
-    digitalWrite(led, LOW); 
+  else {
+    ledState = 0;
   }
 
-//  digitalWrite(led,LOW);
-//  mySerial.print("controller val: ");
-//  mySerial.println(input);
-//  mySerial.print("value: ");
-//  mySerial.println(value);
+  //  digitalWrite(led,LOW);
+  //  mySerial.print("controller val: ");
+  //  mySerial.println(input);
+  //  mySerial.print("value: ");
+  //  mySerial.println(value);
   //  String tmpStrVal = (String) input.charAt(1);
   //  mySerial.println(tmpStrVal.toInt());
 
@@ -236,6 +237,7 @@ dataForController_t getControllerData(void){
 //   pinMode(A5, INPUT);
 //   digitalWrite(A5, HIGH);
 // }
+
 
 
 

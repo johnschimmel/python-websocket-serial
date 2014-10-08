@@ -98,12 +98,15 @@ class App(object):
 
         def ledOn():
           s.writer('A1')
+          # ser.write('A')
+          # ser.write('1')
+          # ser.write('\n')
           
         self.on_button = tk.Button(self.frame, text='on', command=ledOn)
         self.on_button.pack()
 
         def ledOff():
-          s.writer('B123')
+          s.writer('A0')
           # ser.write('1')
           # ser.write('\n')
           # ser.write('\n')
@@ -238,10 +241,14 @@ class SerialPort():
       # time.sleep(0.01)
       
   def writer(self, data):
-    self.serial.write(data[0])
-    self.serial.write(chr(int(data[1:])))
+  
+    self.serial.writelines([data[0],data[1:],'\n'])
     self.serial.flush()
-    self.serial.write('\n')
+    # print('pyserial : ', data[0])
+    # self.serial.write(data[1:])
+    # print('pyserial : ', data[1:])
+    # self.serial.write('\n')
+    # self.serial.flush()
     
     # print "sending", data
 
