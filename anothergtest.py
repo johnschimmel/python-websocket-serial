@@ -135,10 +135,10 @@ class App(object):
             buffer = ser.read(ser.inWaiting())
 
             # initial handshake
-            if not serialContacted:
-              ser.write('A\n')
-              ser.write('\n')
-              serialContacted = True
+            # if not serialContacted:
+            #   ser.write('A\n')
+            #   ser.write('\n')
+            #   serialContacted = True
   
             if buffer and buffer is not '':
               print buffer
@@ -156,34 +156,9 @@ class App(object):
         spawn(check_for_block)
 
 
-        # def websocket_app(environ, start_response):
-        #     print envrion
-        #     print '--------'
-        #     print start_response
-
-        #     if environ["PATH_INFO"] == '/echo':
-        #         ws = environ["wsgi.websocket"]
-        #         message = ws.receive()
-        #         print message
-        #         self.isOn = not self.isOn
-        #         sendVal = "A1" if self.isOn else "B1"
-        #         s.writer(sendVal + '\n')
-        #         s.writer('\n')
-                
-                
-        #         ws.send(message + " wowowowowowowo")
-
-        # def start_websocket():
-        #     server = pywsgi.WSGIServer(("", 9001), websocket_app, handler_class=WebSocketHandler)
-        #     print "Starting websocket server"
-        #     server.serve_forever()
-            
-        # spawn(start_websocket)
-
-
         from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
 
-        class EchoApplication(WebSocketApplication):
+        class RelayApplication(WebSocketApplication):
           
           isOn = False
 
@@ -195,7 +170,7 @@ class App(object):
             print "**************"
             self.ws.send('FUCK')
             self.isOn = not self.isOn
-            sendVal = "A1" if self.isOn else "B1"
+            sendVal = "A1" if self.isOn else "A0"
             s.writer(sendVal)
 
 
@@ -206,7 +181,7 @@ class App(object):
         def start_websocket():
           WebSocketServer(
               ('', 9001),
-              Resource({'/echo': EchoApplication})
+              Resource({'/echo': RelayApplication})
           ).serve_forever()
 
         spawn(start_websocket)
@@ -241,7 +216,7 @@ class SerialPort():
   def writer(self, data):
     for d in data:
       self.serial.write(d)
-      self.serial.flush()
+    self.serial.flush()
     # print('pyserial : ', data[0])
     # self.serial.write(data[1:])
     # print('pyserial : ', data[1:])
