@@ -148,7 +148,7 @@ void loop(){
     mySerial.println("-----");
 
 
-    if (x == '1') {
+    if (val == '1') {
       ledState = 1;
       mySerial.println(val); 
     } 
@@ -234,7 +234,6 @@ dataForController_t getControllerData(void){
 //   pinMode(A5, INPUT);
 //   digitalWrite(A5, HIGH);
 // }
-
 
 
 
