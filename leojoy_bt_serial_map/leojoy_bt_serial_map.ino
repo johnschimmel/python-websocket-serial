@@ -101,7 +101,11 @@ boolean dpadDownOn = false;
 boolean dpadLeftOn = false;
 boolean dpadRightOn = false;
 boolean l1On = false;
+boolean l2On = false;
+boolean l3On = false;
 boolean r1On = false;
+boolean r2On = false;
+boolean r3On = false;
 boolean selectOn = false;
 boolean startOn = false;
 boolean homeOn = false;
@@ -111,7 +115,7 @@ int rightStickX = 128;
 int rightStickY = 128;
 
 void setup(){
-  //  setupPins();
+  //  //  setupPins();
 
   pinMode(led, OUTPUT);
 
@@ -122,11 +126,11 @@ void setup(){
 
 void loop(){
   // Always be getting fresh data
-  //  dataForController_t controllerData = getControllerData();
+  dataForController_t controllerData = getControllerData();
 
   // Then send out the data over the USB connection
   // Joystick.set(controllerData) also works.
-  //  Joystick.setControllerData(controllerData);
+  Joystick.setControllerData(controllerData);
 
   // read incoming serial (softserial)
 
@@ -142,19 +146,85 @@ void loop(){
     int x = mySerial.read(); //read first byte
     int val = mySerial.read(); //read second byte if available;
 
-    mySerial.println(x);
-    mySerial.println(val);
-    mySerial.println(mySerial.available());
-    mySerial.println("-----");
+    //    mySerial.println(x);
+    //    mySerial.println(val);
+    //    mySerial.println(mySerial.available());
+    //    mySerial.println("-----");
 
-
-    if (val == '1') {
-      ledState = 1;
-      mySerial.println(val); 
+    //	'triangle': 'T',
+    //	'circle': 'O',
+    //	'square': 'S',
+    //	'cross': 'X',
+    //	'dpadUp': 'U',
+    //	'dpadDown': 'D',
+    //	'dpadLeft': 'F',
+    //	'dpadRight': 'R',
+    //	'l1': '[',
+    //	'l2': '{',
+    //	'l3': '<',
+    //	'r1': ']',
+    //	'r2': '}',
+    //	'r3': '>',    
+    //	'select': 'Z',
+    //	'start': 'Y',
+    //	'home': 'P',
+    if (x == '*') {
+      mySerial.flush();
+      forceReset(); 
     } 
-    else {
-      ledState=0;
+    else if (x == 'T') {
+      triangleOn = (val == '1');  
+    } 
+    else if (x == 'O') {
+      circleOn = (val == '1');  
+    } 
+    else if (x == 'S') {
+      squareOn = (val == '1'); 
+    } 
+    else if (x == 'X') {
+      crossOn = (val == '1'); 
+    } 
+    else if (x == 'U') {
+      dpadUpOn = (val == '1'); 
+    } 
+    else if (x == 'D') {
+      dpadDownOn = (val == '1'); 
+    } 
+    else if (x == 'F') {
+      dpadLeftOn = (val == '1'); 
+    } 
+    else if (x == 'R') {
+      dpadRightOn = (val == '1'); 
+    } 
+    else if (x == '[') {
+      l1On = (val == '1'); 
+    } 
+    else if (x == '{') {
+      l2On = (val == '1'); 
+    } 
+    else if (x == '<') {
+      l3On = (val == '1'); 
+    } 
+    else if (x == ']') {
+      r1On = (val == '1'); 
+    } 
+    else if (x == '}') {
+      r2On = (val == '1'); 
+    } 
+    else if (x == '>') {
+      r3On = (val == '1'); 
+    } 
+    else if (x == 'Z') {
+      selectOn = (val == '1'); 
+    } 
+    else if (x == 'Y') {
+      startOn = (val == '1'); 
+    } 
+    else if (x == 'P') {
+      homeOn = (val == '1'); 
     }
+
+
     //    delay(10);
   }
 
@@ -166,6 +236,7 @@ void setController(char input, int value) {
   //  mySerial.print(value);
   if (input == 'A' && value == 1) {
     ledState = 1;
+
   } 
   else {
     ledState = 0;
@@ -204,8 +275,8 @@ dataForController_t getControllerData(void){
   controllerData.l1On = l1On;
   controllerData.r1On = r1On;
   controllerData.selectOn = selectOn;
-  controllerData.selectOn = selectOn;
-  controllerData.selectOn = selectOn;
+  controllerData.startOn = startOn;
+  controllerData.homeOn = homeOn;
 
   // Set the analog sticks
   //  Since analogRead(pin) returns a 10 bit value,
@@ -221,19 +292,33 @@ dataForController_t getControllerData(void){
   return controllerData;
 }
 
-// void setupPins(void){
-//   // Set all the digital pins as inputs
-//   // with the pull-up enabled, except for the 
-//   // two serial line pins
-//   for (int i = 2; i <= 7; i++){
-//     pinMode(i, INPUT);
-//     digitalWrite(i, HIGH);
-//   }
-//   pinMode(A4, INPUT);
-//   digitalWrite(A4, HIGH);
-//   pinMode(A5, INPUT);
-//   digitalWrite(A5, HIGH);
-// }
+void forceReset() {
+  triangleOn = false;
+  circleOn = false;
+  squareOn = false;
+  crossOn = false;
+  dpadUpOn = false;
+  dpadDownOn = false;
+  dpadLeftOn = false;
+  dpadRightOn = false;
+  l1On = false;
+  l2On = false;
+  l3On = false;
+  r1On = false;
+  r2On = false;
+  r3On = false;
+  selectOn = false;
+  startOn = false;
+  homeOn = false;
+  leftStickX = 128;
+  leftStickY = 128;
+  rightStickX = 128;
+  rightStickY = 128;
+}
+
+
+
+
 
 
 

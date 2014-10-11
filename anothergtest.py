@@ -170,8 +170,8 @@ class App(object):
             print "**************"
             self.ws.send('FUCK')
             self.isOn = not self.isOn
-            sendVal = "A1" if self.isOn else "A0"
-            s.writer(sendVal)
+            # sendVal = "A1" if self.isOn else "A0"
+            s.writer(message)
 
 
           def on_close(self, reason):
