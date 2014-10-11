@@ -139,9 +139,6 @@ void loop(){
 
   if (numBytes >= 2) {
 
-    mySerial.print("got bytes");
-    mySerial.println(numBytes);
-
 
     int x = mySerial.read(); //read first byte
     int val = mySerial.read(); //read second byte if available;
@@ -224,6 +221,7 @@ void loop(){
       homeOn = (val == '1'); 
     }
 
+   mySerial.println((int) val);
 
     //    delay(10);
   }
