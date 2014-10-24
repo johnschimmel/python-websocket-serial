@@ -221,7 +221,7 @@ void loop(){
       homeOn = (val == '1'); 
     }
 
-   mySerial.println((int) val);
+   mySerial.println(val);
 
     //    delay(10);
   }

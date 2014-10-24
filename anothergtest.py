@@ -141,7 +141,7 @@ class App(object):
             #   serialContacted = True
   
             if buffer and buffer is not '':
-              print buffer
+              print buffer + " !!!!!!"
             
             sleep(0.01)
 
@@ -181,7 +181,7 @@ class App(object):
         def start_websocket():
           WebSocketServer(
               ('', 9001),
-              Resource({'/echo': RelayApplication})
+              Resource({'/controller': RelayApplication})
           ).serve_forever()
 
         spawn(start_websocket)
@@ -208,7 +208,8 @@ class SerialPort():
       buffer = ser.read(ser.inWaiting())
       
       if buffer and buffer is not empty:
-        print buffer
+        print buffer + " !!!"
+
       #   for conn in WSHandler.connections:
       #     conn.write_message(buffer)
       # time.sleep(0.01)
