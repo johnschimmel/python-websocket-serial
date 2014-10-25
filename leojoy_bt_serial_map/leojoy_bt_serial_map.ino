@@ -79,9 +79,9 @@
  */
 
 
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
 
-SoftwareSerial mySerial(10,11); // RX, TX
+//SoftwareSerial Serial1(10,11); // RX, TX
 //unsigned int controllerInputVal=0;  // Max value is 65535
 char incomingByte;
 char controllerInput = '0';         // throw away previous integerValue
@@ -120,7 +120,7 @@ void setup(){
   pinMode(led, OUTPUT);
 
   // set the data rate for the SoftwareSerial port
-  mySerial.begin(115200);  
+  Serial1.begin(115200);  
   //  establishContact();  // send a byte to establish contact until receiver responds 
 }
 
@@ -135,18 +135,18 @@ void loop(){
   // read incoming serial (softserial)
 
   digitalWrite(led, ledState);
-  int numBytes = mySerial.available();
+  int numBytes = Serial1.available();
 
   if (numBytes >= 2) {
 
 
-    int x = mySerial.read(); //read first byte
-    int val = mySerial.read(); //read second byte if available;
+    int x = Serial1.read(); //read first byte
+    int val = Serial1.read(); //read second byte if available;
 
-    //    mySerial.println(x);
-    //    mySerial.println(val);
-    //    mySerial.println(mySerial.available());
-    //    mySerial.println("-----");
+    //    Serial1.println(x);
+    //    Serial1.println(val);
+    //    Serial1.println(Serial1.available());
+    //    Serial1.println("-----");
 
     //	'triangle': 'T',
     //	'circle': 'O',
@@ -166,7 +166,7 @@ void loop(){
     //	'start': 'Y',
     //	'home': 'P',
     if (x == '*') {
-      mySerial.flush();
+      Serial1.flush();
       forceReset(); 
     } 
     else if (x == 'T') {
@@ -220,8 +220,30 @@ void loop(){
     else if (x == 'P') {
       homeOn = (val == '1'); 
     }
+    else if (x == 'L') {
+      char val2 = (char) Serial1.read();
+      char val3 = (char) Serial1.read();
+      String joyValStr = "";
+      joyValStr += (char) val;
+      joyValStr += val2;
+      joyValStr += val3;
+//      Serial1.println("string");
+//      Serial1.println(joyValStr);
+      int joyIntVal = joyValStr.toInt();
+//      Serial1.println("int");
+//      Serial1.println(joyIntVal);
+    }
 
-   mySerial.println(val);
+    if (val == '0'){
+      ledState = HIGH;
+    } 
+    else {
+      ledState = LOW;
+    }
+    //    Serial1.println("bytes remaining: ");
+    //    
+    //    Serial1.println(Serial1.available());
+    Serial1.println(val);
 
     //    delay(10);
   }
@@ -229,27 +251,7 @@ void loop(){
 }
 
 
-void setController(char input, int value) {
-  //  mySerial.print("inside set");
-  //  mySerial.print(value);
-  if (input == 'A' && value == 1) {
-    ledState = 1;
 
-  } 
-  else {
-    ledState = 0;
-  }
-
-  //  digitalWrite(led,LOW);
-  //  mySerial.print("controller val: ");
-  //  mySerial.println(input);
-  //  mySerial.print("value: ");
-  //  mySerial.println(value);
-  //  String tmpStrVal = (String) input.charAt(1);
-  //  mySerial.println(tmpStrVal.toInt());
-
-
-}
 
 
 
@@ -313,6 +315,9 @@ void forceReset() {
   rightStickX = 128;
   rightStickY = 128;
 }
+
+
+
 
 
 

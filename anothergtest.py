@@ -215,8 +215,8 @@ class SerialPort():
       # time.sleep(0.01)
       
   def writer(self, data):
-    for d in data:
-      self.serial.write(d)
+    self.serial.write(data[0])
+    self.serial.write(chr(128))
     self.serial.flush()
     # print('pyserial : ', data[0])
     # self.serial.write(data[1:])
