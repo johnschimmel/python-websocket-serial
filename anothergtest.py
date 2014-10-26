@@ -21,6 +21,14 @@ serialContacted = False
 ser = None
 s = None
 
+controllerMap = {
+  "*": "*",
+  "cross": "X",
+  "circle": "O",
+  "triangle": "T",
+  "square": "S"
+}
+
 class App(object):
     def __init__(self, root):
         
@@ -220,7 +228,13 @@ class SerialPort():
     else:
       valueToSendPrepared = data['value'].encode('ascii','ignore')
     
-    self.serial.write(data['cmd'].encode('ascii','ignore'))
+    cmdReceived = data['cmd'].encode('ascii','ignore')
+    if cmdReceived in controllerMap:
+      cmdToSend = controllerMap[cmdReceived]
+    else:
+      cmdToSend = cmdReceived
+
+    self.serial.write(cmdToSend)
     self.serial.write(valueToSendPrepared)
     # self.serial.flush()
 
