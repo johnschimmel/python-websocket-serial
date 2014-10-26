@@ -141,7 +141,7 @@ void loop(){
 
 
     int x = Serial1.read(); //read first byte
-    int val = Serial1.read(); //read second byte if available;
+    byte val = Serial1.read(); //read second byte if available;
 
     //    Serial1.println(x);
     //    Serial1.println(val);
@@ -170,28 +170,28 @@ void loop(){
       forceReset(); 
     } 
     else if (x == 'T') {
-      triangleOn = (val == '1');  
+      triangleOn = (val == 1);  
     } 
     else if (x == 'O') {
-      circleOn = (val == '1');  
+      circleOn = (val == 1);  
     } 
     else if (x == 'S') {
-      squareOn = (val == '1'); 
+      squareOn = (val == 1); 
     } 
     else if (x == 'X') {
-      crossOn = (val == '1'); 
+      crossOn = (val == 1); 
     } 
     else if (x == 'U') {
-      dpadUpOn = (val == '1'); 
+      dpadUpOn = (val == 1); 
     } 
     else if (x == 'D') {
-      dpadDownOn = (val == '1'); 
+      dpadDownOn = (val == 1); 
     } 
     else if (x == 'F') {
-      dpadLeftOn = (val == '1'); 
+      dpadLeftOn = (val == 1); 
     } 
     else if (x == 'R') {
-      dpadRightOn = (val == '1'); 
+      dpadRightOn = (val == 1); 
     } 
     else if (x == '[') {
       l1On = (val == '1'); 
@@ -221,20 +221,20 @@ void loop(){
       homeOn = (val == '1'); 
     }
     else if (x == 'L') {
-      char val2 = (char) Serial1.read();
-      char val3 = (char) Serial1.read();
-      String joyValStr = "";
-      joyValStr += (char) val;
-      joyValStr += val2;
-      joyValStr += val3;
+//      char val2 = (char) Serial1.read();
+//      char val3 = (char) Serial1.read();
+//      String joyValStr = "";
+//      joyValStr += (char) val;
+//      joyValStr += val2;
+//      joyValStr += val3;
 //      Serial1.println("string");
 //      Serial1.println(joyValStr);
-      int joyIntVal = joyValStr.toInt();
+//      int joyIntVal = joyValStr.toInt();
 //      Serial1.println("int");
 //      Serial1.println(joyIntVal);
     }
 
-    if (val == '0'){
+    if ((int)val == 1){
       ledState = HIGH;
     } 
     else {
@@ -243,7 +243,7 @@ void loop(){
     //    Serial1.println("bytes remaining: ");
     //    
     //    Serial1.println(Serial1.available());
-    Serial1.println(val);
+    Serial1.println((int)val);
 
     //    delay(10);
   }

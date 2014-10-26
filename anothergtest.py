@@ -7,6 +7,8 @@ from gevent import monkey, spawn, sleep
 monkey.patch_all()
 import urllib2
 import Tkinter as tk
+import struct
+import json
 
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
@@ -167,13 +169,10 @@ class App(object):
 
           def on_message(self, message):
             print message
-            print "**************"
-            self.ws.send('FUCK')
-            self.isOn = not self.isOn
-            # sendVal = "A1" if self.isOn else "A0"
-            s.writer(message)
-
-
+            
+            incomingData = json.loads(message)
+            s.writer(incomingData)
+            
           def on_close(self, reason):
             print reason
             print 'DISCONNECT!!!!'
@@ -215,16 +214,15 @@ class SerialPort():
       # time.sleep(0.01)
       
   def writer(self, data):
-    self.serial.write(data[0])
-    self.serial.write(chr(128))
-    self.serial.flush()
-    # print('pyserial : ', data[0])
-    # self.serial.write(data[1:])
-    # print('pyserial : ', data[1:])
-    # self.serial.write('\n')
-    # self.serial.flush()
+            
+    if (data['value'] != "*"): # and isinstance( valueToSend, ( int, long ) )):
+      valueToSendPrepared = struct.pack('!{0}B'.format(1), int(data['value']))
+    else:
+      valueToSendPrepared = data['value'].encode('ascii','ignore')
     
-    # print "sending", data
+    self.serial.write(data['cmd'].encode('ascii','ignore'))
+    self.serial.write(valueToSendPrepared)
+    # self.serial.flush()
 
 
 if __name__ == '__main__':
