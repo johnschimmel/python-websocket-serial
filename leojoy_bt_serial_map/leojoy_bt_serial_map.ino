@@ -115,13 +115,10 @@ int rightStickX = 128;
 int rightStickY = 128;
 
 void setup(){
-  //  //  setupPins();
-
   pinMode(led, OUTPUT);
 
   // set the data rate for the SoftwareSerial port
   Serial1.begin(115200);  
-  //  establishContact();  // send a byte to establish contact until receiver responds 
 }
 
 void loop(){
@@ -155,7 +152,7 @@ void loop(){
     //	'dpadUp': 'U',
     //	'dpadDown': 'D',
     //	'dpadLeft': 'F',
-    //	'dpadRight': 'R',
+    //	'dpadRight': 'G',
     //	'l1': '[',
     //	'l2': '{',
     //	'l3': '<',
@@ -190,62 +187,42 @@ void loop(){
     else if (x == 'F') {
       dpadLeftOn = (val == 1); 
     } 
-    else if (x == 'R') {
+    else if (x == 'G') {
       dpadRightOn = (val == 1); 
     } 
     else if (x == '[') {
-      l1On = (val == '1'); 
+      l1On = (val == 1); 
     } 
     else if (x == '{') {
-      l2On = (val == '1'); 
+      l2On = (val == 1); 
     } 
     else if (x == '<') {
-      l3On = (val == '1'); 
+      l3On = (val == 1); 
     } 
     else if (x == ']') {
-      r1On = (val == '1'); 
+      r1On = (val == 1); 
     } 
     else if (x == '}') {
-      r2On = (val == '1'); 
+      r2On = (val == 1); 
     } 
     else if (x == '>') {
-      r3On = (val == '1'); 
+      r3On = (val == 1); 
     } 
     else if (x == 'Z') {
-      selectOn = (val == '1'); 
+      selectOn = (val == 1); 
     } 
     else if (x == 'Y') {
-      startOn = (val == '1'); 
+      startOn = (val == 1); 
     } 
     else if (x == 'P') {
-      homeOn = (val == '1'); 
+      homeOn = (val == 1); 
     }
     else if (x == 'L') {
-//      char val2 = (char) Serial1.read();
-//      char val3 = (char) Serial1.read();
-//      String joyValStr = "";
-//      joyValStr += (char) val;
-//      joyValStr += val2;
-//      joyValStr += val3;
-//      Serial1.println("string");
-//      Serial1.println(joyValStr);
-//      int joyIntVal = joyValStr.toInt();
-//      Serial1.println("int");
-//      Serial1.println(joyIntVal);
-    }
-
-    if ((int)val == 1){
-      ledState = HIGH;
+      leftStickX = val; //left stick X
     } 
-    else {
-      ledState = LOW;
+    else if (x == 'l') {
+      leftStickY = val; //left stick Y
     }
-    //    Serial1.println("bytes remaining: ");
-    //    
-    //    Serial1.println(Serial1.available());
-    Serial1.println((int)val);
-
-    //    delay(10);
   }
 
 }
@@ -315,6 +292,7 @@ void forceReset() {
   rightStickX = 128;
   rightStickY = 128;
 }
+
 
 
 

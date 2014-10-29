@@ -26,7 +26,16 @@ controllerMap = {
   "cross": "X",
   "circle": "O",
   "triangle": "T",
-  "square": "S"
+  "square": "S",
+  "dpad_up": "U",
+  "dpad_left": "F",
+  "dpad_right": "G",
+  "dpad_down": "D",
+  "select": "Z",
+  "start": "Y",
+  "ps": "P",
+  "left_joy_x": "L",
+  "left_joy_y": "l"
 }
 
 class App(object):
