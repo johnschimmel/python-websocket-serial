@@ -122,112 +122,121 @@ void setup(){
 }
 
 void loop(){
+
+  while(Serial1.available()) {
+
+    int numBytes = Serial1.available();
+
+    if (numBytes >= 2) {
+
+
+      int x = Serial1.read(); //read first byte
+      byte val = Serial1.read(); //read second byte if available;
+
+      //  'triangle': 'T',
+      //  'circle': 'O',
+      //  'square': 'S',
+      //  'cross': 'X',
+      //  'dpadUp': 'U',
+      //  'dpadDown': 'D',
+      //  'dpadLeft': 'F',
+      //  'dpadRight': 'G',
+      //  'l1': '[',
+      //  'l2': '{',
+      //  'l3': '<',
+      //  'r1': ']',
+      //  'r2': '}',
+      //  'r3': '>',    
+      //  'select': 'Z',
+      //  'start': 'Y',
+      //  'home': 'P',
+      if (x == '*') {
+        Serial1.flush();
+        forceReset(); 
+      } 
+      else if (x == 'T') {
+        triangleOn = (val == 1);  
+      } 
+      else if (x == 'O') {
+        circleOn = (val == 1);  
+      } 
+      else if (x == 'S') {
+        squareOn = (val == 1); 
+      } 
+      else if (x == 'X') {
+        crossOn = (val == 1); 
+      } 
+      else if (x == 'U') {
+        dpadUpOn = (val == 1); 
+      } 
+      else if (x == 'D') {
+        dpadDownOn = (val == 1); 
+      } 
+      else if (x == 'F') {
+        dpadLeftOn = (val == 1); 
+      } 
+      else if (x == 'G') {
+        dpadRightOn = (val == 1); 
+      } 
+      else if (x == '[') {
+        l1On = (val == 1); 
+      } 
+      else if (x == '{') {
+        l2On = (val == 1); 
+      } 
+      else if (x == '<') {
+        l3On = (val == 1); 
+      } 
+      else if (x == ']') {
+        r1On = (val == 1); 
+      } 
+      else if (x == '}') {
+        r2On = (val == 1); 
+      } 
+      else if (x == '>') {
+        r3On = (val == 1); 
+      } 
+      else if (x == 'Z') {
+        selectOn = (val == 1); 
+      } 
+      else if (x == 'Y') {
+        startOn = (val == 1); 
+      } 
+      else if (x == 'P') {
+        homeOn = (val == 1); 
+      }
+      else if (x == 'L') {
+        leftStickX = val; //left stick X
+      } 
+      else if (x == 'l') {
+        leftStickY = val; //left stick Y
+      }
+      else if (x == 'R') {
+        rightStickX = val; //left stick X
+      } 
+      else if (x == 'r') {
+        rightStickY = val; //left stick Y
+      }
+      
+      ledState = (val==1);
+//      Serial1.println((int) val);
+
+
+    }
+    break;
+
+  }
+
   // Always be getting fresh data
   dataForController_t controllerData = getControllerData();
+
+  digitalWrite(led, ledState);
 
   // Then send out the data over the USB connection
   // Joystick.set(controllerData) also works.
   Joystick.setControllerData(controllerData);
 
-  // read incoming serial (softserial)
-
-  digitalWrite(led, ledState);
-  int numBytes = Serial1.available();
-
-  if (numBytes >= 2) {
-
-
-    int x = Serial1.read(); //read first byte
-    byte val = Serial1.read(); //read second byte if available;
-
-    //    Serial1.println(x);
-    //    Serial1.println(val);
-    //    Serial1.println(Serial1.available());
-    //    Serial1.println("-----");
-
-    //	'triangle': 'T',
-    //	'circle': 'O',
-    //	'square': 'S',
-    //	'cross': 'X',
-    //	'dpadUp': 'U',
-    //	'dpadDown': 'D',
-    //	'dpadLeft': 'F',
-    //	'dpadRight': 'G',
-    //	'l1': '[',
-    //	'l2': '{',
-    //	'l3': '<',
-    //	'r1': ']',
-    //	'r2': '}',
-    //	'r3': '>',    
-    //	'select': 'Z',
-    //	'start': 'Y',
-    //	'home': 'P',
-    if (x == '*') {
-      Serial1.flush();
-      forceReset(); 
-    } 
-    else if (x == 'T') {
-      triangleOn = (val == 1);  
-    } 
-    else if (x == 'O') {
-      circleOn = (val == 1);  
-    } 
-    else if (x == 'S') {
-      squareOn = (val == 1); 
-    } 
-    else if (x == 'X') {
-      crossOn = (val == 1); 
-    } 
-    else if (x == 'U') {
-      dpadUpOn = (val == 1); 
-    } 
-    else if (x == 'D') {
-      dpadDownOn = (val == 1); 
-    } 
-    else if (x == 'F') {
-      dpadLeftOn = (val == 1); 
-    } 
-    else if (x == 'G') {
-      dpadRightOn = (val == 1); 
-    } 
-    else if (x == '[') {
-      l1On = (val == 1); 
-    } 
-    else if (x == '{') {
-      l2On = (val == 1); 
-    } 
-    else if (x == '<') {
-      l3On = (val == 1); 
-    } 
-    else if (x == ']') {
-      r1On = (val == 1); 
-    } 
-    else if (x == '}') {
-      r2On = (val == 1); 
-    } 
-    else if (x == '>') {
-      r3On = (val == 1); 
-    } 
-    else if (x == 'Z') {
-      selectOn = (val == 1); 
-    } 
-    else if (x == 'Y') {
-      startOn = (val == 1); 
-    } 
-    else if (x == 'P') {
-      homeOn = (val == 1); 
-    }
-    else if (x == 'L') {
-      leftStickX = val; //left stick X
-    } 
-    else if (x == 'l') {
-      leftStickY = val; //left stick Y
-    }
-  }
-
 }
-
-
 
 
 
@@ -250,7 +259,11 @@ dataForController_t getControllerData(void){
   controllerData.dpadLeftOn = dpadLeftOn;
   controllerData.dpadRightOn = dpadRightOn;
   controllerData.l1On = l1On;
+  controllerData.l2On = l2On;
+  controllerData.l3On = l3On;
   controllerData.r1On = r1On;
+  controllerData.r2On = r2On;
+  controllerData.r3On = r3On;
   controllerData.selectOn = selectOn;
   controllerData.startOn = startOn;
   controllerData.homeOn = homeOn;
@@ -292,6 +305,11 @@ void forceReset() {
   rightStickX = 128;
   rightStickY = 128;
 }
+
+
+
+
+
 
 
 
