@@ -92,6 +92,8 @@ int byteCount = 0;
 int led = 13;
 int ledState = 0;
 
+
+
 boolean triangleOn = false;
 boolean circleOn = false;
 boolean squareOn = false;
@@ -150,6 +152,7 @@ void loop(){
       //  'select': 'Z',
       //  'start': 'Y',
       //  'home': 'P',
+      
       if (x == '*') {
         Serial1.flush();
         forceReset(); 
@@ -235,6 +238,8 @@ void loop(){
   // Then send out the data over the USB connection
   // Joystick.set(controllerData) also works.
   Joystick.setControllerData(controllerData);
+  
+  delay(100);
 
 }
 
