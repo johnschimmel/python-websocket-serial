@@ -21,6 +21,10 @@ serialContacted = False
 ser = None
 s = None
 
+appConfig = {
+  "title" : "Capacita by DIYAbility"
+}
+
 controllerMap = {
   "*": "*",
   "cross": "X",
@@ -38,14 +42,16 @@ controllerMap = {
   "left_joy_y": "l"
 }
 
+
 class App(object):
     def __init__(self, root):
         
         self.frame = tk.Frame(root)
+        root.title(appConfig.get('title'))
         # self.text = tk.Text(self.frame)
         # self.text.pack()
         # self.entry = tk.Entry(self.frame)
-        # self.entry.insert(tk.END, "http://ipv4.google.com")
+        # self.entry.insert(tk.END,   "http://ipv4.google.com")
         # self.entry.pack()
         self.serialPortOptionsValues = []
         for port, desc, hwid in sorted(comports()):
@@ -96,39 +102,17 @@ class App(object):
           
 
         self.serial_connect_string = tk.StringVar()
-        self.serial_connect_string.set('Connect')
+        self.serial_connect_string.set('Connect!')
         self.serial_connect_button = tk.Button(self.frame, textvariable=self.serial_connect_string, command=connectSelectedSerial)
         self.serial_connect_button.pack()
 
-        self.isOn = False
 
-        # def fetch_url():
-        #     url = self.entry.get()
-        #     self.text.delete(1.0, tk.END)
-        #     self.text.insert(tk.END, "Fetching...")
-        #     data = urllib2.urlopen(url).read()
-        #     self.text.delete(1.0, tk.END)
-        #     self.text.insert(tk.END, data)
-
-        # self.fetch_button = tk.Button(self.frame, text="Fetch URL", command=lambda : spawn(fetch_url))
-        # self.fetch_button.pack()
-
-        def ledOn():
-          s.writer('A1')
-          # ser.write('A')
-          # ser.write('1')
-          # ser.write('\n')
+        # def ledOn():
+        #   s.writer('A1')
           
-        self.on_button = tk.Button(self.frame, text='on', command=ledOn)
-        self.on_button.pack()
+        # self.on_button = tk.Button(self.frame, text='on', command=ledOn)
+        # self.on_button.pack()
 
-        def ledOff():
-          s.writer('A0')
-          # ser.write('1')
-          # ser.write('\n')
-          # ser.write('\n')
-        self.off_button = tk.Button(self.frame, text='OFF', command=ledOff)
-        self.off_button.pack()
 
 
         def quit():
@@ -140,10 +124,22 @@ class App(object):
             run_forever = False
 
         self.quit_string = tk.StringVar()
-        self.quit_string.set('Connect')
+        self.quit_string.set('Quit')
         self.quit_button = tk.Button(self.frame, textvariable=self.quit_string, command=quit)
         self.quit_button.pack()
         self.frame.pack()
+
+        
+        # def check_for_block():
+        #     """ Simple visual indicator if mainloop is blocked """
+        #     i = 0
+        #     self.quit_string.set('Quit')
+        #     # while True:
+        #     #     self.quit_string.set("Quit " + "-\|/"[i % 1])
+        #     #     i += 1
+        #     #     sleep(0.1)
+
+        # spawn(check_for_block)
 
         def read_incoming_serial():
           global serialContacted
@@ -164,15 +160,6 @@ class App(object):
             
             sleep(0.01)
 
-        def check_for_block():
-            """ Simple visual indicator if mainloop is blocked """
-            i = 0
-            while True:
-                self.quit_string.set("Quit " + "-\|/"[i % 1])
-                i += 1
-                sleep(0.1)
-
-        spawn(check_for_block)
 
 
         from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
@@ -248,8 +235,18 @@ class SerialPort():
     # self.serial.flush()
 
 
+def position_window(w=300, h=200):
+    # get screen width and height
+    ws = root.winfo_screenwidth()
+    hs = root.winfo_screenheight()
+    
+    x = 100 #(ws/2) - (w/2) # to center
+    y = 100 #(hs/2) - (h/2)
+    root.geometry('%dx%d+%d+%d' % (w, h, x, y))
+
 if __name__ == '__main__':
     root = tk.Tk()
+    position_window(300, 300)
     app = App(root)
     
     for port, desc, hwid in sorted(comports()):
