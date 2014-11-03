@@ -1,2 +1,9 @@
 venv/
 *.pyc
+server.crt
+server.csr
+server.key
+server.key.org
+dist/
+build/
+.DS_Store

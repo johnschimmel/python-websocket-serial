@@ -233,13 +233,12 @@ void loop(){
   // Always be getting fresh data
   dataForController_t controllerData = getControllerData();
 
-  digitalWrite(led, ledState);
-
   // Then send out the data over the USB connection
   // Joystick.set(controllerData) also works.
   Joystick.setControllerData(controllerData);
   
-  delay(100);
+  digitalWrite(led, ledState);
+  delay(50);
 
 }
 

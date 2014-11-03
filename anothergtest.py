@@ -21,6 +21,8 @@ serialContacted = False
 ser = None
 s = None
 
+global_websocket = None
+
 appConfig = {
   "title" : "Capacita by DIYAbility"
 }
@@ -169,7 +171,9 @@ class App(object):
           isOn = False
 
           def on_open(self):
+            global_websocket = self.ws
             print "Connection opened"
+            global_websocket.send("websocket connected")
 
           def on_message(self, message):
             print message
@@ -183,7 +187,7 @@ class App(object):
 
         def start_websocket():
           WebSocketServer(
-              ('', 9001),
+              ('localhost', 9001),
               Resource({'/controller': RelayApplication})
           ).serve_forever()
 
