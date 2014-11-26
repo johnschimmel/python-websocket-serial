@@ -3,7 +3,7 @@
 import time
 import serial
 from serial.tools.list_ports import comports
-from gevent import monkey, spawn, sleep
+from gevent import monkey, spawn, sleep, kill
 monkey.patch_all()
 import urllib2
 import Tkinter as tk
@@ -12,6 +12,7 @@ import json
 
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
+from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
 
 
 run_forever = True
@@ -22,6 +23,11 @@ ser = None
 s = None
 
 global_websocket = None
+isWebsocketConnected = False
+
+# keep track of gevents
+serialReaderGreenlet = None
+websocketGreenlet = None
 
 appConfig = {
   "title" : "Capacita by DIYAbility"
@@ -37,11 +43,19 @@ controllerMap = {
   "dpad_left": "F",
   "dpad_right": "G",
   "dpad_down": "D",
+  "l1":"[",
+  "l2":"{",
+  "l3":"<",
+  "r1":"]",
+  "r2":"}",
+  "r3":">",
   "select": "Z",
   "start": "Y",
   "ps": "P",
   "left_joy_x": "L",
-  "left_joy_y": "l"
+  "left_joy_y": "l",
+  "right_joy_x": "R",
+  "right_joy_y": "r"
 }
 
 
@@ -66,31 +80,27 @@ class App(object):
 
         def connectSelectedSerial():
 
-          global serialConnected
-          global ser
-          global s
+          global serialConnected, ser, s
 
           # serial port setup
           # print self.serialPortSelectionVar.get()
           if ( not serialConnected):
             ser = serial.Serial(self.serialPortSelectionVar.get())
             serialConnected = True
+            
+            if isWebsocketConnected:
+              global_websocket.send("hello from new serial connection")
+
             self.serial_connect_string.set('Disconnect')
             ser.setDTR(False)
             ser.baudrate = 115200
             ser.timeout = 0
-            time.sleep(0.5)
+            time.sleep(0.1)
 
             s = SerialPort(ser)
             s.start()
-            
-
-            # c = 0
-            # while not ser.inWaiting():
-            #   c = c +1
-            #   print 'waiting %d' % c
               
-            spawn(read_incoming_serial)
+            serialReaderGreenlet = spawn(read_incoming_serial)
             
 
           else:
@@ -109,11 +119,29 @@ class App(object):
         self.serial_connect_button.pack()
 
 
-        # def ledOn():
-        #   s.writer('A1')
+        def testWebsocketSend():
+
+          global isWebsocketConnected, global_websocket
+          if isWebsocketConnected:
+            tmpSerialData = {
+              'type':'serial',
+              'state':'on',
+              'data':'S1'
+            }
+            global_websocket.send(json.dumps(tmpSerialData))
+
+            time.sleep(.3)
+            tmpSerialData = {
+              'type':'serial',
+              'state':'off',
+              'data':'S1'
+            }
+            global_websocket.send(json.dumps(tmpSerialData))
+            
+            print "test button pressed"
           
-        # self.on_button = tk.Button(self.frame, text='on', command=ledOn)
-        # self.on_button.pack()
+        self.test_button = tk.Button(self.frame, text='socket test', command=testWebsocketSend)
+        self.test_button.pack()
 
 
 
@@ -131,21 +159,11 @@ class App(object):
         self.quit_button.pack()
         self.frame.pack()
 
-        
-        # def check_for_block():
-        #     """ Simple visual indicator if mainloop is blocked """
-        #     i = 0
-        #     self.quit_string.set('Quit')
-        #     # while True:
-        #     #     self.quit_string.set("Quit " + "-\|/"[i % 1])
-        #     #     i += 1
-        #     #     sleep(0.1)
-
-        # spawn(check_for_block)
 
         def read_incoming_serial():
           global serialContacted
           global serialConnected
+          global isWebsocketConnected, global_websocket
 
           while True and serialConnected:
             buffer = ''
@@ -159,19 +177,28 @@ class App(object):
   
             if buffer and buffer is not '':
               print buffer + " !!!!!!"
+
+              if isWebsocketConnected:
+                tmpSerialData = {
+                  'type':'serial',
+                  'data':buffer
+                }
+                global_websocket.send(json.stringify(tmpSerialData))
+
             
             sleep(0.01)
 
 
 
-        from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
-
+        
         class RelayApplication(WebSocketApplication):
-          
           isOn = False
-
+          
           def on_open(self):
+            global isWebsocketConnected, global_websocket
+          
             global_websocket = self.ws
+            isWebsocketConnected = True
             print "Connection opened"
             global_websocket.send("websocket connected")
 
@@ -182,8 +209,11 @@ class App(object):
             s.writer(incomingData)
             
           def on_close(self, reason):
+            global isWebsocketConnected
+          
             print reason
             print 'DISCONNECT!!!!'
+            isWebsocketConnected = False
 
         def start_websocket():
           WebSocketServer(
@@ -191,7 +221,7 @@ class App(object):
               Resource({'/controller': RelayApplication})
           ).serve_forever()
 
-        spawn(start_websocket)
+        websocketGreenlet = spawn(start_websocket)
 
 class SerialPort():
   ports = []
