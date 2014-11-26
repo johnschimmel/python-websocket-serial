@@ -92,6 +92,8 @@ class App(object):
               global_websocket.send("hello from new serial connection")
 
             self.serial_connect_string.set('Disconnect')
+
+            write_config_file(**{'port':self.serialPortSelectionVar.get()})
             ser.setDTR(False)
             ser.baudrate = 115200
             ser.timeout = 0
@@ -143,7 +145,14 @@ class App(object):
         self.test_button = tk.Button(self.frame, text='socket test', command=testWebsocketSend)
         self.test_button.pack()
 
+        def testConfigSet():
+          currConfig = get_config_file()
+          print currConfig
+          print "******* current config ********"
 
+          
+        self.test_config_set = tk.Button(self.frame, text='config set', command=testConfigSet)
+        self.test_config_set.pack()
 
         def quit():
             global serialConnected
@@ -268,6 +277,20 @@ class SerialPort():
     self.serial.write(valueToSendPrepared)
     # self.serial.flush()
 
+def get_config_file():
+  config_file_obj = open("config.json","r")
+  config_data = json.loads(config_file_obj.read())
+  config_file_obj.close()
+  return config_data
+
+def write_config_file(**kwargs):
+  
+  write_config_obj = open("config.json","w")
+  tmpConfig = {
+    'port' : kwargs.get('port')
+  }
+  write_config_obj.write(json.dumps(tmpConfig))
+  write_config_obj.close()
 
 def position_window(w=300, h=200):
     # get screen width and height
