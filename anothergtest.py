@@ -73,8 +73,15 @@ class App(object):
         for port, desc, hwid in sorted(comports()):
           self.serialPortOptionsValues.append(port)
         
-        self.serialPortSelectionVar = tk.StringVar(root)
-        self.serialPortSelectionVar.set(self.serialPortOptionsValues[0]) # default value
+        self.serialPortSelectionVar = tk.StringVar(root) 
+        
+        # get default port
+        config_data = get_config_file()
+        if config_data.get('port') in self.serialPortOptionsValues:
+          self.serialPortSelectionVar.set(config_data.get('port'))
+        else:
+          self.serialPortSelectionVar.set(self.serialPortOptionsValues[0]) # default value
+       
         self.serialPortOptionMenu = apply(tk.OptionMenu, (root, self.serialPortSelectionVar) + tuple(self.serialPortOptionsValues))
         self.serialPortOptionMenu.pack()
 
@@ -282,6 +289,7 @@ def get_config_file():
   config_data = json.loads(config_file_obj.read())
   config_file_obj.close()
   return config_data
+
 
 def write_config_file(**kwargs):
   
