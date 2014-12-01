@@ -133,7 +133,7 @@ void loop(){
 
 
       int x = Serial1.read(); //read first byte
-      byte val = Serial1.read(); //read second byte if available;
+      int val = Serial1.read(); //read second byte if available;
 
       //  'triangle': 'T',
       //  'circle': 'O',
@@ -158,55 +158,55 @@ void loop(){
         forceReset(); 
       } 
       else if (x == 'T') {
-        triangleOn = (val == 1);  
+        triangleOn = (val == '1');  
       } 
       else if (x == 'O') {
-        circleOn = (val == 1);  
+        circleOn = (val == '1');  
       } 
       else if (x == 'S') {
-        squareOn = (val == 1); 
+        squareOn = (val == '1'); 
       } 
       else if (x == 'X') {
-        crossOn = (val == 1); 
+        crossOn = (val == '1'); 
       } 
       else if (x == 'U') {
-        dpadUpOn = (val == 1); 
+        dpadUpOn = (val == '1'); 
       } 
       else if (x == 'D') {
-        dpadDownOn = (val == 1); 
+        dpadDownOn = (val == '1'); 
       } 
       else if (x == 'F') {
-        dpadLeftOn = (val == 1); 
+        dpadLeftOn = (val == '1'); 
       } 
       else if (x == 'G') {
-        dpadRightOn = (val == 1); 
+        dpadRightOn = (val == '1'); 
       } 
       else if (x == '[') {
-        l1On = (val == 1); 
+        l1On = (val == '1'); 
       } 
       else if (x == '{') {
-        l2On = (val == 1); 
+        l2On = (val == '1'); 
       } 
       else if (x == '<') {
-        l3On = (val == 1); 
+        l3On = (val == '1'); 
       } 
       else if (x == ']') {
-        r1On = (val == 1); 
+        r1On = (val == '1'); 
       } 
       else if (x == '}') {
-        r2On = (val == 1); 
+        r2On = (val == '1'); 
       } 
       else if (x == '>') {
-        r3On = (val == 1); 
+        r3On = (val == '1'); 
       } 
       else if (x == 'Z') {
-        selectOn = (val == 1); 
+        selectOn = (val == '1'); 
       } 
       else if (x == 'Y') {
-        startOn = (val == 1); 
+        startOn = (val == '1'); 
       } 
       else if (x == 'P') {
-        homeOn = (val == 1); 
+        homeOn = (val == '1'); 
       }
       else if (x == 'L') {
         leftStickX = val; //left stick X
@@ -221,8 +221,9 @@ void loop(){
         rightStickY = val; //left stick Y
       }
       
-      ledState = (val==1);
-//      Serial1.println((int) val);
+      ledState = (val == '1');
+      Serial1.println(char(x));
+      Serial1.println(char(val));
 
 
     }
