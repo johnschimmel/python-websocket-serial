@@ -222,7 +222,8 @@ void loop(){
       }
       
       ledState = (val == '1');
-      Serial1.println(char(x));
+      Serial1.println(val);
+      Serial1.println(byte(val));
       Serial1.println(char(val));
 
 
