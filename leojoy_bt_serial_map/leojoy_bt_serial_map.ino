@@ -67,11 +67,11 @@
  uint8_t dpadDownOn : 1;
  uint8_t padding : 7;     // We end with 7 bytes of padding to make sure we get our data aligned in bytes
  
- uint8_t leftStickX : 8;  // Each of the analog stick values can range from 0 to 255
+ uint8_t leftStickX : 8;  // Each of the analog stick digit2ues can range from 0 to 255
  uint8_t leftStickY : 8;  //  0 is fully left or up
  uint8_t rightStickX : 8; //  255 is fully right or down 
  uint8_t rightStickY : 8; //  128 is centered.
- // Important - analogRead(pin) returns a 10 bit value, so if you're getting strange
+ // Important - analogRead(pin) returns a 10 bit digit2ue, so if you're getting strange
  //  results from analogRead, you may need to do (analogRead(pin) >> 2) to get good data
  } dataForController_t;
  
@@ -82,16 +82,19 @@
 //#include <SoftwareSerial.h>
 
 //SoftwareSerial Serial1(10,11); // RX, TX
-//unsigned int controllerInputVal=0;  // Max value is 65535
+//unsigned int controllerInputdigit2=0;  // Max digit2ue is 65535
 char incomingByte;
-char controllerInput = '0';         // throw away previous integerValue
-int controllerInputVal = 0;         // throw away previous integerValue
+char controllerInput = '0';         // throw away previous integerdigit2ue
+int controllerInputdigit2 = 0;         // throw away previous integerdigit2ue
 
 String combinedData = "";
 int byteCount = 0;
 int led = 13;
 int ledState = 0;
 
+#define numberOfDigits 3
+char theNumberString[numberOfDigits + 1]; // used to atoi joyVal value
+int joyVal;
 
 
 boolean triangleOn = false;
@@ -133,7 +136,13 @@ void loop(){
 
 
       int x = Serial1.read(); //read first byte
-      int val = Serial1.read(); //read second byte if available;
+      int digit0 = Serial1.read(); //read second byte if available;
+      int digit1 = Serial1.read(); //read second byte if available;
+      int digit2 = Serial1.read(); //read second byte if available;
+      theNumberString[0] = digit0;
+      theNumberString[1] = digit1;
+      theNumberString[2] = digit2;
+      theNumberString[3] = 0x00;
 
       //  'triangle': 'T',
       //  'circle': 'O',
@@ -152,79 +161,86 @@ void loop(){
       //  'select': 'Z',
       //  'start': 'Y',
       //  'home': 'P',
-      
+
       if (x == '*') {
         Serial1.flush();
         forceReset(); 
       } 
       else if (x == 'T') {
-        triangleOn = (val == '1');  
+        triangleOn = (digit2 == '1');  
       } 
       else if (x == 'O') {
-        circleOn = (val == '1');  
+        circleOn = (digit2 == '1');  
       } 
       else if (x == 'S') {
-        squareOn = (val == '1'); 
+        squareOn = (digit2 == '1'); 
       } 
       else if (x == 'X') {
-        crossOn = (val == '1'); 
+        crossOn = (digit2 == '1'); 
       } 
       else if (x == 'U') {
-        dpadUpOn = (val == '1'); 
+        dpadUpOn = (digit2 == '1'); 
       } 
       else if (x == 'D') {
-        dpadDownOn = (val == '1'); 
+        dpadDownOn = (digit2 == '1'); 
       } 
       else if (x == 'F') {
-        dpadLeftOn = (val == '1'); 
+        dpadLeftOn = (digit2 == '1'); 
       } 
       else if (x == 'G') {
-        dpadRightOn = (val == '1'); 
+        dpadRightOn = (digit2 == '1'); 
       } 
       else if (x == '[') {
-        l1On = (val == '1'); 
+        l1On = (digit2 == '1'); 
       } 
       else if (x == '{') {
-        l2On = (val == '1'); 
+        l2On = (digit2 == '1'); 
       } 
       else if (x == '<') {
-        l3On = (val == '1'); 
+        l3On = (digit2 == '1'); 
       } 
       else if (x == ']') {
-        r1On = (val == '1'); 
+        r1On = (digit2 == '1'); 
       } 
       else if (x == '}') {
-        r2On = (val == '1'); 
+        r2On = (digit2 == '1'); 
       } 
       else if (x == '>') {
-        r3On = (val == '1'); 
+        r3On = (digit2 == '1'); 
       } 
       else if (x == 'Z') {
-        selectOn = (val == '1'); 
+        selectOn = (digit2 == '1'); 
       } 
       else if (x == 'Y') {
-        startOn = (val == '1'); 
+        startOn = (digit2 == '1'); 
       } 
       else if (x == 'P') {
-        homeOn = (val == '1'); 
+        homeOn = (digit2 == '1'); 
       }
       else if (x == 'L') {
-        leftStickX = val; //left stick X
+        joyVal = atoi(theNumberString);
+        leftStickX = joyVal; //left stick X
+        Serial1.println("joyval");
+        Serial1.println(int(joyVal));
+
       } 
       else if (x == 'l') {
-        leftStickY = val; //left stick Y
+        joyVal = atoi(theNumberString);        
+        leftStickY = joyVal; //left stick Y
       }
       else if (x == 'R') {
-        rightStickX = val; //left stick X
+        joyVal = atoi(theNumberString);
+        rightStickX = joyVal; //left stick X
+        Serial1.println("joyval");
+        Serial1.println(joyVal);
       } 
       else if (x == 'r') {
-        rightStickY = val; //left stick Y
+        joyVal = atoi(theNumberString);
+        rightStickY = joyVal; //left stick Y
       }
-      
-      ledState = (val == '1');
-      Serial1.println(val);
-      Serial1.println(byte(val));
-      Serial1.println(char(val));
+
+      ledState = (digit2 == '1');
+
 
 
     }
@@ -238,7 +254,7 @@ void loop(){
   // Then send out the data over the USB connection
   // Joystick.set(controllerData) also works.
   Joystick.setControllerData(controllerData);
-  
+
   digitalWrite(led, ledState);
   delay(50);
 
@@ -254,7 +270,7 @@ dataForController_t getControllerData(void){
   //  Use the getBlankDataForController() function, since
   //  just declaring a fresh dataForController_t tends
   //  to get you one filled with junk from other, random
-  //  values that were in those memory locations before
+  //  digit2ues that were in those memory locations before
   dataForController_t controllerData = getBlankDataForController();
   controllerData.triangleOn = triangleOn;
   controllerData.circleOn = circleOn;
@@ -275,7 +291,7 @@ dataForController_t getControllerData(void){
   controllerData.homeOn = homeOn;
 
   // Set the analog sticks
-  //  Since analogRead(pin) returns a 10 bit value,
+  //  Since analogRead(pin) returns a 10 bit digit2ue,
   //  we need to perform a bit shift operation to
   //  lose the 2 least significant bits and get an
   //  8 bit number that we can use  // analogRead(A0) >> 2;
@@ -311,6 +327,8 @@ void forceReset() {
   rightStickX = 128;
   rightStickY = 128;
 }
+
+
 
 
 
